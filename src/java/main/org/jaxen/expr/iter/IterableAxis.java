@@ -33,11 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jaxen.expr.iter;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
 import org.jaxen.ContextSupport;
 import org.jaxen.UnsupportedAxisException;
+
+import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * Provide access to the XPath axes.

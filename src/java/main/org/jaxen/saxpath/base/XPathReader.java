@@ -49,14 +49,10 @@
 
 package org.jaxen.saxpath.base;
 
-import java.util.ArrayList;
-
-import org.jaxen.saxpath.Axis;
-import org.jaxen.saxpath.Operator;
-import org.jaxen.saxpath.SAXPathException;
-import org.jaxen.saxpath.XPathHandler;
-import org.jaxen.saxpath.XPathSyntaxException;
+import org.jaxen.saxpath.*;
 import org.jaxen.saxpath.helpers.DefaultXPathHandler;
+
+import java.util.ArrayList;
 
 /** Implementation of SAXPath's <code>XPathReader</code> which
  *  generates callbacks to an <code>XPathHandler</code>.
@@ -103,8 +99,7 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
 
         if ( LA(1) != TokenTypes.EOF )
         {
-            XPathSyntaxException ex = createSyntaxException( "Unexpected '" + LT(1).getTokenText() + "'" );
-            throw ex;
+            throw createSyntaxException( "Unexpected '" + LT(1).getTokenText() + "'" );
         }
 
         lexer  = null;
@@ -185,10 +180,18 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
                 locationPath( true );
                 break;
             }
+            case TokenTypes.Q:
+            case TokenTypes.Q_DOLLAR:
+            case TokenTypes.Q_HAT:
+            case TokenTypes.Q_LESS_THAN_SIGN:
+            case TokenTypes.Q_GREATER_THAN_SIGN:
+            {
+                locationPath(false);
+                break;
+            }
             default:
             {
-                XPathSyntaxException ex = createSyntaxException( "Unexpected '" + LT(1).getTokenText() + "'" );
-                throw ex;
+                throw createSyntaxException( "Unexpected '" + LT(1).getTokenText() + "'" );
             }
         }
 
@@ -204,8 +207,8 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
 
     private void functionCall() throws SAXPathException
     {
-        String prefix       = null;
-        String functionName = null;
+        String prefix;
+        String functionName;
 
         if ( LA(2) == TokenTypes.COLON )
         {
@@ -295,8 +298,8 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
     {
         match( TokenTypes.DOLLAR );
 
-        String prefix       = null;
-        String variableName = null;
+        String prefix;
+        String variableName;
 
         if ( LA(2) == TokenTypes.COLON )
         {
@@ -336,6 +339,11 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
             case TokenTypes.DOT:
             case TokenTypes.DOT_DOT:
             case TokenTypes.STAR:
+            case TokenTypes.Q:
+            case TokenTypes.Q_DOLLAR:
+            case TokenTypes.Q_HAT:
+            case TokenTypes.Q_LESS_THAN_SIGN:
+            case TokenTypes.Q_GREATER_THAN_SIGN:
             {
                 relativeLocationPath();
                 break;
@@ -366,6 +374,11 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
                     case TokenTypes.AT:
                     case TokenTypes.IDENTIFIER:
                     case TokenTypes.STAR:
+                    case TokenTypes.Q:
+                    case TokenTypes.Q_DOLLAR:
+                    case TokenTypes.Q_HAT:
+                    case TokenTypes.Q_LESS_THAN_SIGN:
+                    case TokenTypes.Q_GREATER_THAN_SIGN:
                     {
                         steps();
                         break;
@@ -386,6 +399,11 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
                     case TokenTypes.AT:
                     case TokenTypes.IDENTIFIER:
                     case TokenTypes.STAR:
+                    case TokenTypes.Q:
+                    case TokenTypes.Q_DOLLAR:
+                    case TokenTypes.Q_HAT:
+                    case TokenTypes.Q_LESS_THAN_SIGN:
+                    case TokenTypes.Q_GREATER_THAN_SIGN:
                     {
                         steps();
                         break;
@@ -438,6 +456,11 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
             case TokenTypes.AT:
             case TokenTypes.IDENTIFIER:
             case TokenTypes.STAR:
+            case TokenTypes.Q:
+            case TokenTypes.Q_DOLLAR:
+            case TokenTypes.Q_HAT:
+            case TokenTypes.Q_LESS_THAN_SIGN:
+            case TokenTypes.Q_GREATER_THAN_SIGN:
             {
                 step();
                 break;
@@ -488,6 +511,11 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
                 case TokenTypes.AT:
                 case TokenTypes.IDENTIFIER:
                 case TokenTypes.STAR:
+                case TokenTypes.Q:
+                case TokenTypes.Q_DOLLAR:
+                case TokenTypes.Q_HAT:
+                case TokenTypes.Q_LESS_THAN_SIGN:
+                case TokenTypes.Q_GREATER_THAN_SIGN:
                 {
                     step();
                     break;
@@ -534,6 +562,36 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
             case TokenTypes.STAR:
             {
                 axis = Axis.CHILD;
+                break;
+            }
+            case TokenTypes.Q:
+            {
+                axis = Axis.SELECT_OR_CREATE;
+                match(TokenTypes.Q);
+                break;
+            }
+            case TokenTypes.Q_DOLLAR:
+            {
+                axis = Axis.CREATE_LAST_CHILD;
+                match(TokenTypes.Q_DOLLAR);
+                break;
+            }
+            case TokenTypes.Q_HAT:
+            {
+                axis = Axis.CREATE_FIRST_CHILD;
+                match(TokenTypes.Q_HAT);
+                break;
+            }
+            case TokenTypes.Q_LESS_THAN_SIGN:
+            {
+                axis = Axis.CREATE_PRECEDING_SIBLING;
+                match(TokenTypes.Q_LESS_THAN_SIGN);
+                break;
+            }
+            case TokenTypes.Q_GREATER_THAN_SIGN:
+            {
+                axis = Axis.CREATE_FOLLOWING_SIBLING;
+                match(TokenTypes.Q_GREATER_THAN_SIGN);
                 break;
             }
         }
@@ -601,8 +659,7 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
                 break;
             }
             default:
-                XPathSyntaxException ex = createSyntaxException("Expected <QName> or *");
-                throw ex;
+                throw createSyntaxException("Expected <QName> or *");
         }
     }
 
@@ -663,8 +720,7 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
         }
         else
         {
-            XPathSyntaxException ex = createSyntaxException( "Expected node-type" );
-            throw ex;
+            throw createSyntaxException( "Expected node-type" );
         }
     }
 
@@ -1034,9 +1090,8 @@ public class XPathReader implements org.jaxen.saxpath.XPathReader
             return token;
         }
 
-        
-        XPathSyntaxException ex = createSyntaxException( "Expected: " + TokenTypes.getTokenText( tokenType ) );
-        throw ex;
+
+        throw createSyntaxException( "Expected: " + TokenTypes.getTokenText( tokenType ) );
     }
 
     private int LA(int position)

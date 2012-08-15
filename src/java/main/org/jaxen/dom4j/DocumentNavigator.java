@@ -48,32 +48,17 @@ package org.jaxen.dom4j;
  * $Id$
 */
 
+import org.dom4j.*;
+import org.dom4j.io.SAXReader;
+import org.jaxen.*;
+import org.jaxen.XPath;
+import org.jaxen.saxpath.SAXPathException;
+import org.jaxen.util.SingleObjectIterator;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
-import org.dom4j.Attribute;
-import org.dom4j.Branch;
-import org.dom4j.CDATA;
-import org.dom4j.Comment;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Namespace;
-import org.dom4j.Node;
-import org.dom4j.ProcessingInstruction;
-import org.dom4j.QName;
-import org.dom4j.Text;
-import org.dom4j.io.SAXReader;
-import org.jaxen.DefaultNavigator;
-import org.jaxen.FunctionCallException;
-import org.jaxen.NamedAccessNavigator;
-import org.jaxen.Navigator;
-import org.jaxen.XPath;
-import org.jaxen.JaxenConstants;
-import org.jaxen.saxpath.SAXPathException;
-import org.jaxen.util.SingleObjectIterator;
 
 /** 
  * Interface for navigating around the DOM4J object model.

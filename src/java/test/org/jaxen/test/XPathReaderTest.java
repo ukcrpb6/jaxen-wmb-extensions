@@ -48,22 +48,27 @@
 
 package org.jaxen.test;
 
-import java.io.IOException;
+import junit.framework.TestCase;
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
+import org.jaxen.JaxenException;
+import org.jaxen.NamespaceContext;
+import org.jaxen.SimpleNamespaceContext;
+import org.jaxen.XPath;
+import org.jaxen.dom.DOMXPath;
+import org.jaxen.saxpath.SAXPathException;
+import org.jaxen.saxpath.XPathSyntaxException;
+import org.jaxen.saxpath.base.XPathReader;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import junit.framework.TestCase;
-
-import org.jaxen.JaxenException;
-import org.jaxen.XPath;
-import org.jaxen.dom.DOMXPath;
-import org.jaxen.saxpath.SAXPathException;
-import org.jaxen.saxpath.base.XPathReader;
-import org.jaxen.saxpath.XPathSyntaxException;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class XPathReaderTest extends TestCase
 {
@@ -468,5 +473,42 @@ public class XPathReaderTest extends TestCase
         Boolean result = (Boolean) xpath.evaluate(doc);
         assertTrue(result.booleanValue());
     }
-    
+
+    public DOMXPath createXPathWithNamespaces(String xpath, NamespaceContext context) throws JaxenException {
+        DOMXPath xp = new DOMXPath(xpath);
+        xp.setNamespaceContext(context);
+        return xp;
+    }
+
+    public void testIbmCreateLastChild() throws Exception
+    {
+        Map map = new HashMap();
+        map.put("pre", "http://www.example.org/");
+        SimpleNamespaceContext context = new SimpleNamespaceContext(map);
+
+        createXPathWithNamespaces( "/foo/?^wibble/?^pre:inner-wibble", context).selectNodes(doc);
+        createXPathWithNamespaces( "/foo/wibble/pre:inner-wibble/?^abc", context).selectNodes(doc);
+        createXPathWithNamespaces( "/foo/wibble/pre:inner-wibble/?^abc", context).selectNodes(doc);
+        createXPathWithNamespaces( "/foo/wibble/pre:inner-wibble//abc/?^xyz", context).selectNodes(doc);
+        createXPathWithNamespaces( "/foo/wibble/?^before-inner-wibble", context ).selectNodes(doc);
+        createXPathWithNamespaces( "/foo/wibble/?$after-inner-wibble", context ).selectNodes(doc);
+        createXPathWithNamespaces("/foo/wibble/?<before-wibble/?^abc", context).selectNodes(doc);
+        createXPathWithNamespaces("/foo/wibble/?>after-wibble/?^abc", context).selectNodes(doc);
+        createXPathWithNamespaces("/foo/wibble/?checked-wibble/?^abc", context).selectNodes(doc);
+        createXPathWithNamespaces("/foo/wibble/?checked-wibble/?$def", context).selectNodes(doc);
+        createXPathWithNamespaces("/foo/wibble/checked-wibble/def[set-value('test')]", context).selectNodes(doc);
+        createXPathWithNamespaces("/foo/wibble/checked-wibble/def/?ghi", context).selectNodes(doc);
+        serialize(doc, System.out);
+    }
+
+    public void serialize(Document doc, OutputStream out) throws Exception {
+        OutputFormat format = new OutputFormat(doc);
+        format.setLineWidth(65);
+        format.setIndenting(true);
+        format.setIndent(2);
+        XMLSerializer serializer = new XMLSerializer(out, format);
+        serializer.serialize(doc);
+    }
+
+
 }

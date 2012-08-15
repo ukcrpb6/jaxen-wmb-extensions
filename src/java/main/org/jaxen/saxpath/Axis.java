@@ -107,6 +107,21 @@ public class Axis
     /** The <code>ancestor-or-self</code> axis */
     public final static int ANCESTOR_OR_SELF   = 13;
 
+    /** IBM <code>select-or-create</code> axis **/
+    public final static int SELECT_OR_CREATE = 14;
+
+    /** IBM <code>create-following-sibling</code> axis **/
+    public final static int CREATE_FOLLOWING_SIBLING   = 15;
+
+    /** IBM <code>create-preceding-sibling</code> axis **/
+    public final static int CREATE_PRECEDING_SIBLING   = 16;
+
+    /** IBM <code>create-first-child</code> axis **/
+    public final static int CREATE_FIRST_CHILD   = 17;
+
+    /** IBM <code>create-last-child</code> axis **/
+    public final static int CREATE_LAST_CHILD   = 18;
+
     /**
      * <p>
      * Returns the name of the axis.
@@ -159,6 +174,22 @@ public class Axis
 
             case ANCESTOR_OR_SELF:
                 return "ancestor-or-self";
+
+            case SELECT_OR_CREATE:
+                return "select-or-create";
+
+            case CREATE_FIRST_CHILD:
+                return "create-first-child";
+
+            case CREATE_LAST_CHILD:
+                return "create-last-child";
+
+            case CREATE_FOLLOWING_SIBLING:
+                return "create-following-sibling";
+
+            case CREATE_PRECEDING_SIBLING:
+                return "create-preceding-sibling";
+
         }
 
         throw new JaxenRuntimeException("Illegal Axis Number");
@@ -240,6 +271,26 @@ public class Axis
         if ( "ancestor-or-self".equals( axisName ) )
         {
             return ANCESTOR_OR_SELF;
+        }
+
+        if ("select-or-create".equals(axisName)) {
+            return SELECT_OR_CREATE;
+        }
+
+        if ("create-preceding-sibling".equals(axisName)) {
+            return CREATE_PRECEDING_SIBLING;
+        }
+
+        if ("create-following-sibling".equals(axisName)) {
+            return CREATE_FOLLOWING_SIBLING;
+        }
+
+        if ("create-first-child".equals(axisName)) {
+            return CREATE_FIRST_CHILD;
+        }
+
+        if ("create-last-child".equals(axisName)) {
+            return CREATE_LAST_CHILD;
         }
 
         return INVALID_AXIS;

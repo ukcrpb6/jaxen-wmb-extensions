@@ -99,6 +99,12 @@ class TokenTypes
     // split star into two token types
     static final int STAR_OPERATOR = 31;
 
+    static final int Q = 32;
+    static final int Q_DOLLAR = 33;
+    static final int Q_HAT = 34;
+    static final int Q_LESS_THAN_SIGN = 35;
+    static final int Q_GREATER_THAN_SIGN = 36;
+
     static String getTokenText( int tokenType )
     {
         switch( tokenType )
@@ -173,6 +179,16 @@ class TokenTypes
                 return "(double)";
             case COMMA:
                 return ",";
+            case Q:
+                return "?";
+            case Q_DOLLAR:
+                return "?$";
+            case Q_HAT:
+                return "?^";
+            case Q_LESS_THAN_SIGN:
+                return "?<";
+            case Q_GREATER_THAN_SIGN:
+                return "?>";
             default:
                 // This method is only called from an error handler, and only
                 // to provide an exception message. In other words, the string

@@ -48,20 +48,7 @@
 package org.jaxen.expr;
 
 import org.jaxen.JaxenException;
-import org.jaxen.expr.iter.IterableAncestorAxis;
-import org.jaxen.expr.iter.IterableAncestorOrSelfAxis;
-import org.jaxen.expr.iter.IterableAttributeAxis;
-import org.jaxen.expr.iter.IterableAxis;
-import org.jaxen.expr.iter.IterableChildAxis;
-import org.jaxen.expr.iter.IterableDescendantAxis;
-import org.jaxen.expr.iter.IterableDescendantOrSelfAxis;
-import org.jaxen.expr.iter.IterableFollowingAxis;
-import org.jaxen.expr.iter.IterableFollowingSiblingAxis;
-import org.jaxen.expr.iter.IterableNamespaceAxis;
-import org.jaxen.expr.iter.IterableParentAxis;
-import org.jaxen.expr.iter.IterablePrecedingAxis;
-import org.jaxen.expr.iter.IterablePrecedingSiblingAxis;
-import org.jaxen.expr.iter.IterableSelfAxis;
+import org.jaxen.expr.iter.*;
 import org.jaxen.saxpath.Axis;
 import org.jaxen.saxpath.Operator;
 
@@ -332,6 +319,16 @@ public class DefaultXPathFactory implements XPathFactory
                 return new IterableAncestorOrSelfAxis( axis );
             case Axis.ANCESTOR:
                 return new IterableAncestorAxis( axis );
+            case Axis.CREATE_FIRST_CHILD:
+                return IterableSelfCreatingChildAxis.iterableSelfCreatingFirstChildAxis(axis);
+            case Axis.CREATE_LAST_CHILD:
+                return IterableSelfCreatingChildAxis.iterableSelfCreatingLastChildAxis(axis);
+            case Axis.CREATE_PRECEDING_SIBLING:
+                return IterableSelfCreatingChildAxis.iterablePrecedingSiblingSelfCreatingAxis(axis);
+            case Axis.CREATE_FOLLOWING_SIBLING:
+                return IterableSelfCreatingChildAxis.iterableFollowingSiblingSelfCreatingAxis(axis);
+            case Axis.SELECT_OR_CREATE:
+                return new IterableCreateOrSelectChildAxis(axis);
             default:
                 throw new JaxenException("Unrecognized axis code: " + axis);
         }

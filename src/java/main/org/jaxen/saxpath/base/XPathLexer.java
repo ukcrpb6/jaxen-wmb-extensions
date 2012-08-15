@@ -246,6 +246,27 @@ class XPathLexer
                     token = whitespace();
                     break;
                 }
+
+                // IBM XPath Extensions
+                case '?': {
+                    switch (LA(2)) {
+                        case '^':
+                            token = createSelectFirstChild();
+                            break;
+                        case '<':
+                            token = createSelectPreviousSibling();
+                            break;
+                        case '>':
+                            token = createSelectNextSibling();
+                            break;
+                        case '$':
+                            token = createSelectLastChild();
+                            break;
+                        default:
+                            token = selectOrCreateLastChild();
+                    }
+                    break;
+                }
                     
                 default:
                 {
@@ -264,7 +285,7 @@ class XPathLexer
                                    getXPath(),
                                    this.currentPosition,
                                    this.endPosition );
-            }
+                }
                 else
                 {
                     token = new Token( TokenTypes.ERROR,
@@ -313,6 +334,11 @@ class XPathLexer
             case TokenTypes.GREATER_THAN_OR_EQUALS_SIGN:
             case TokenTypes.EQUALS:
             case TokenTypes.NOT_EQUALS:
+            case TokenTypes.Q:
+            case TokenTypes.Q_DOLLAR:
+            case TokenTypes.Q_HAT:
+            case TokenTypes.Q_LESS_THAN_SIGN:
+            case TokenTypes.Q_GREATER_THAN_SIGN:
             {
                 expectOperator = false;
                 break;
@@ -329,7 +355,7 @@ class XPathLexer
 
     private Token identifierOrOperatorName()
     {
-        Token token = null;
+        Token token;
         if ( expectOperator ) {
             token = operatorName();
         } else {
@@ -337,10 +363,10 @@ class XPathLexer
         }
         return token;
     }
-    
+
     private Token identifier()
     {
-        Token token = null;
+        Token token;
     
         int start = this.currentPosition;
     
@@ -885,7 +911,57 @@ class XPathLexer
     
         return token;
     }
-    
+
+    private Token createSelectFirstChild() {
+        Token token = new Token(TokenTypes.Q_HAT,
+                getXPath(),
+                this.currentPosition,
+                this.currentPosition + 2);
+        consume();
+        consume();
+        return token;
+    }
+
+    private Token createSelectLastChild() {
+        Token token = new Token(TokenTypes.Q_DOLLAR,
+                getXPath(),
+                this.currentPosition,
+                this.currentPosition + 2);
+        consume();
+        consume();
+
+        return token;
+    }
+
+    private Token selectOrCreateLastChild() {
+        Token token = new Token(TokenTypes.Q,
+                getXPath(),
+                this.currentPosition,
+                this.currentPosition + 1);
+        consume();
+        return token;
+    }
+
+    private Token createSelectPreviousSibling() {
+        Token token = new Token(TokenTypes.Q_LESS_THAN_SIGN,
+                getXPath(),
+                this.currentPosition,
+                this.currentPosition + 2);
+        consume();
+        consume();
+        return token;
+    }
+
+    private Token createSelectNextSibling() {
+        Token token = new Token(TokenTypes.Q_GREATER_THAN_SIGN,
+                getXPath(),
+                this.currentPosition,
+                this.currentPosition + 2);
+        consume();
+        consume();
+        return token;
+    }
+
     private char LA(int i) 
     {
         if ( currentPosition + ( i - 1 ) >= this.endPosition )

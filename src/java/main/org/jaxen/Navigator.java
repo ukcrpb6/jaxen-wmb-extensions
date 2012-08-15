@@ -48,10 +48,10 @@ package org.jaxen;
  * $Id$
 */
 
+import org.jaxen.saxpath.SAXPathException;
+
 import java.io.Serializable;
 import java.util.Iterator;
-
-import org.jaxen.saxpath.SAXPathException;
 
 /** Interface for navigating around an arbitrary object
  *  model, using XPath semantics.
@@ -546,4 +546,16 @@ public interface Navigator extends Serializable
      *  @see org.jaxen.pattern.Pattern
      */
     short getNodeType(Object node);
+
+    Object createAfter(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException;
+
+    Object createBefore(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException;
+
+    Object createAsFirstChild(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException;
+
+    Object createAsLastChild(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException;
+
+    void setElementStringValue(Object contextNode, String value);
+
+    void setAttributeStringValue(Object contextNode, String value);
 }

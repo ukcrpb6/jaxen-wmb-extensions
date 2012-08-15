@@ -49,18 +49,10 @@
 
 package org.jaxen;
 
-import java.util.Iterator;
-
 import org.jaxen.pattern.Pattern;
-import org.jaxen.util.AncestorAxisIterator;
-import org.jaxen.util.AncestorOrSelfAxisIterator;
-import org.jaxen.util.DescendantAxisIterator;
-import org.jaxen.util.DescendantOrSelfAxisIterator;
-import org.jaxen.util.FollowingAxisIterator;
-import org.jaxen.util.FollowingSiblingAxisIterator;
-import org.jaxen.util.PrecedingAxisIterator;
-import org.jaxen.util.PrecedingSiblingAxisIterator;
-import org.jaxen.util.SelfAxisIterator;
+import org.jaxen.util.*;
+
+import java.util.Iterator;
 
 /** Default implementation of {@link Navigator}.
  *
@@ -83,6 +75,30 @@ import org.jaxen.util.SelfAxisIterator;
  */
 public abstract class DefaultNavigator implements Navigator
 {
+
+    public Object createAfter(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
+        throw new UnsupportedAxisException("create axis not supported");
+    }
+
+    public Object createBefore(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
+        throw new UnsupportedAxisException("create axis not supported");
+    }
+
+    public Object createAsFirstChild(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
+        throw new UnsupportedAxisException("create axis not supported");
+    }
+
+    public Object createAsLastChild(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
+        throw new UnsupportedAxisException("create axis not supported");
+    }
+
+    public void setElementStringValue(Object contextNode, String value) {
+        throw new UnsupportedOperationException("set-value not supported");
+    }
+
+    public void setAttributeStringValue(Object contextNode, String value) {
+        throw new UnsupportedOperationException("set-value not supported");
+    }
 
     /** Throws <code>UnsupportedAxisException</code>
      * 

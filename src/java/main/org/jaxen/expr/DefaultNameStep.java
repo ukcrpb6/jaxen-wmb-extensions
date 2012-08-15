@@ -33,18 +33,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jaxen.expr;
 
+import org.jaxen.*;
+import org.jaxen.expr.iter.IterableAxis;
+import org.jaxen.expr.iter.IterableCreateOrSelectChildAxis;
+import org.jaxen.expr.iter.IterableSelfCreatingChildAxis;
+import org.jaxen.saxpath.Axis;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.jaxen.Context;
-import org.jaxen.ContextSupport;
-import org.jaxen.JaxenException;
-import org.jaxen.UnresolvableException;
-import org.jaxen.Navigator;
-import org.jaxen.expr.iter.IterableAxis;
-import org.jaxen.saxpath.Axis;
 
 /** 
  * Expression object that represents any flavor
@@ -148,6 +146,18 @@ public class DefaultNameStep extends DefaultStep implements NameStep {
         return buf.append(getLocalName()).append(super.getText()).toString();
     }
 
+    private List createIfMissing(Object contextNode, ContextSupport support) throws JaxenException {
+        IterableAxis iterableAxis = getIterableAxis();
+        if(iterableAxis instanceof IterableCreateOrSelectChildAxis) {
+            Object createdNode = ((IterableCreateOrSelectChildAxis) iterableAxis)
+                    .createSelf(contextNode, support, localName, prefix, support.translateNamespacePrefixToUri(prefix));
+            ArrayList<Object> l = new ArrayList<Object>();
+            l.add(createdNode);
+            return l;
+        }
+        return Collections.EMPTY_LIST;
+    }
+
     /**
      * Evaluate the context node set to find the new node set.
      * <p>
@@ -164,10 +174,16 @@ public class DefaultNameStep extends DefaultStep implements NameStep {
         ContextSupport support = context.getContextSupport();
         IterableAxis iterableAxis = getIterableAxis();
         boolean namedAccess = (!matchesAnyName && iterableAxis.supportsNamedAccess(support));
-        
+
         // optimize for context size 1 (common case, avoids lots of object creation)
         if (contextSize == 1) {
             Object contextNode = contextNodeSet.get(0);
+
+            if(iterableAxis instanceof IterableSelfCreatingChildAxis) {
+                Object createdNode = ((IterableSelfCreatingChildAxis) iterableAxis).createSelf(contextNode, support, localName, prefix, support.translateNamespacePrefixToUri(prefix));
+                contextNode = support.getNavigator().getParentNode(createdNode);
+            }
+
             if (namedAccess) {
                 // get the iterator over the nodes and check it
                 String uri = null;
@@ -180,7 +196,7 @@ public class DefaultNameStep extends DefaultStep implements NameStep {
                 Iterator axisNodeIter = iterableAxis.namedAccessIterator(
                                 contextNode, support, localName, prefix, uri);
                 if (axisNodeIter == null || !axisNodeIter.hasNext()) {
-                    return Collections.EMPTY_LIST;
+                    return createIfMissing(contextNode, support);
                 }
 
                 // convert iterator to list for predicate test
@@ -198,7 +214,7 @@ public class DefaultNameStep extends DefaultStep implements NameStep {
                 // get the iterator over the nodes and check it
                 Iterator axisNodeIter = iterableAxis.iterator(contextNode, support);
                 if (axisNodeIter == null || !axisNodeIter.hasNext()) {
-                    return Collections.EMPTY_LIST;
+                    return createIfMissing(contextNode, support);
                 }
 
                 // run through iterator, filtering using matches()
@@ -209,6 +225,10 @@ public class DefaultNameStep extends DefaultStep implements NameStep {
                     if (matches(eachAxisNode, support)) {
                         newNodeSet.add(eachAxisNode);
                     }
+                }
+
+                if(newNodeSet.isEmpty()) {
+                    return createIfMissing(contextNode, support);
                 }
                 
                 // evaluate the predicates
@@ -231,6 +251,11 @@ public class DefaultNameStep extends DefaultStep implements NameStep {
             }
             for (int i = 0; i < contextSize; ++i) {
                 Object eachContextNode = contextNodeSet.get(i);
+
+                if(iterableAxis instanceof IterableSelfCreatingChildAxis) {
+                    Object createdNode = ((IterableSelfCreatingChildAxis) iterableAxis).createSelf(eachContextNode, support, localName, prefix, support.translateNamespacePrefixToUri(prefix));
+                    eachContextNode = support.getNavigator().getParentNode(createdNode);
+                }
 
                 Iterator axisNodeIter = iterableAxis.namedAccessIterator(
                                 eachContextNode, support, localName, prefix, uri);
@@ -264,6 +289,11 @@ public class DefaultNameStep extends DefaultStep implements NameStep {
         } else {
             for (int i = 0; i < contextSize; ++i) {
                 Object eachContextNode = contextNodeSet.get(i);
+
+                if(iterableAxis instanceof IterableSelfCreatingChildAxis) {
+                    Object createdNode = ((IterableSelfCreatingChildAxis) iterableAxis).createSelf(eachContextNode, support, localName, prefix, support.translateNamespacePrefixToUri(prefix));
+                    eachContextNode = support.getNavigator().getParentNode(createdNode);
+                }
 
                 Iterator axisNodeIter = axisIterator(eachContextNode, support);
                 if (axisNodeIter == null || !axisNodeIter.hasNext()) {

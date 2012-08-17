@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>jaxen</groupId>
+  <groupId>com.pressassociation.bus.jaxen</groupId>
   <artifactId>jaxen</artifactId>
   <name>jaxen</name>
   <version>1.1.5</version>
@@ -214,14 +214,15 @@
           <debug>true</debug>
           <optimize>true</optimize>
           <showDeprecation>true</showDeprecation>
-          <source>1.3</source>
-          <target>1.2</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-repository-plugin</artifactId>
         <version>2.3.1</version>
       </plugin>
+<!--
       <plugin>
         <artifactId>maven-gpg-plugin</artifactId>
         <version>1.4</version>
@@ -234,6 +235,7 @@
           </execution>
         </executions>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.8.1</version>
